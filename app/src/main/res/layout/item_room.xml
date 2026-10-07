@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+
+	android:id="@+id/roomCard"
+
+	android:layout_width="match_parent"
+	android:layout_height="120dp"
+
+	android:layout_marginStart="12dp"
+	android:layout_marginEnd="12dp"
+	android:layout_marginTop="6dp"
+	android:layout_marginBottom="6dp"
+
+	app:cardBackgroundColor="@android:color/white"
+	app:cardCornerRadius="10dp"
+	app:cardElevation="2dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:padding="10dp">
+
+		<!-- Hotel Image -->
+		<ImageView
+			android:id="@+id/ivRoomImage"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:contentDescription="Hotel image"
+			android:scaleType="centerCrop" />
+
+		<!-- Hotel Information -->
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:layout_marginStart="12dp"
+			android:gravity="center_vertical"
+			android:orientation="vertical">
+
+			<!-- Hotel Name -->
+			<TextView
+				android:id="@+id/tvRoomName"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:maxLines="1"
+				android:ellipsize="end"
+				android:textColor="#222222"
+				android:textSize="17sp"
+				android:textStyle="bold" />
+
+			<!-- Location -->
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="5dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+
+				<ImageView
+					android:id="@+id/ivLocationIcon"
+					android:layout_width="16dp"
+					android:layout_height="16dp"
+					android:contentDescription="Location"
+					android:scaleType="fitCenter"
+					android:src="@drawable/pin" />
+
+				<TextView
+					android:id="@+id/tvRoomLocation"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:layout_marginStart="5dp"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="#FF0000"
+					android:textSize="14sp" />
+
+			</LinearLayout>
+
+			<!-- Rating -->
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="5dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+
+				<ImageView
+					android:id="@+id/ivRateIcon"
+					android:layout_width="16dp"
+					android:layout_height="16dp"
+					android:contentDescription="Rating"
+					android:scaleType="fitCenter"
+					android:src="@drawable/rate" />
+
+				<TextView
+					android:id="@+id/tvRoomStars"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="5dp"
+					android:textColor="#3F3D73"
+					android:textSize="14sp"
+					android:textStyle="bold" />
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<!-- Minimum Price -->
+		<TextView
+			android:id="@+id/tvRoomPrice"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="center_vertical"
+			android:paddingStart="8dp"
+			android:paddingEnd="4dp"
+			android:textColor="#0A046D"
+			android:textSize="16sp"
+			android:textStyle="bold" />
+
+	</LinearLayout>
+
+</androidx.cardview.widget.CardView>
