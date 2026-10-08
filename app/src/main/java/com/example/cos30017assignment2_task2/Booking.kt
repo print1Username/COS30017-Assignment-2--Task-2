@@ -11,5 +11,6 @@ data class Booking(
 	val checkOut: String,
 	val numberOfNights: Long,
 	val roomRate: Double,
-	val total: Double
+	val total: Double,
+	val imageResId: Int
 ) : Parcelable

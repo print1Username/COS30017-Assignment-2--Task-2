@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import android.content.res.ColorStateList
+import android.graphics.Color
 
 class BookingActivity : AppCompatActivity() {
 
@@ -53,8 +55,8 @@ class BookingActivity : AppCompatActivity() {
 		setupSpinner()
 		setupBookNowButton()
 
-		// Booking cannot be made until valid dates are selected.
-		btnBookNow.isEnabled = false
+		// Book Now is disabled when the page is first opened.
+		updateBookNowState()
 	}
 
 	private fun initViews() {
@@ -96,26 +98,34 @@ class BookingActivity : AppCompatActivity() {
 		checkInDateContainer.setOnClickListener {
 
 			val today = getTodayCalendar()
-
 			val initialDate = checkInCalendar ?: today
 
 			val dialog = DatePickerDialog(
 				this,
 				{ _, year, month, dayOfMonth ->
 
-					val selectedDate = createDate(year, month, dayOfMonth)
+					val selectedDate = createDate(
+						year,
+						month,
+						dayOfMonth
+					)
 
 					// Past dates should never be accepted.
 					if (selectedDate.before(today)) {
-						tvCheckInDate.error = "Please select today or a future date."
+						tvCheckInDate.error =
+							"Please select today or a future date."
 						return@DatePickerDialog
 					}
 
 					checkInCalendar = selectedDate
 
-					// If the new check-in date is after the existing
-					// check-out date, clear the check-out date.
-					if (checkOutCalendar != null &&
+					/*
+					 * If the new check-in date is the same as
+					 * or after the existing check-out date,
+					 * clear the check-out date.
+					 */
+					if (
+						checkOutCalendar != null &&
 						!checkOutCalendar!!.after(selectedDate)
 					) {
 						checkOutCalendar = null
@@ -124,8 +134,8 @@ class BookingActivity : AppCompatActivity() {
 
 					tvCheckInDate.text = formatDate(selectedDate)
 
-					// Recalculate total and button state.
 					calculateTotal()
+					updateBookNowState()
 				},
 				initialDate.get(Calendar.YEAR),
 				initialDate.get(Calendar.MONTH),
@@ -143,7 +153,10 @@ class BookingActivity : AppCompatActivity() {
 
 			val today = getTodayCalendar()
 
-			// Check-out cannot be selected before a check-in date.
+			/*
+			 * If check-in has been selected,
+			 * check-out must be at least one day later.
+			 */
 			val minimumDate = if (checkInCalendar != null) {
 				getNextDay(checkInCalendar!!)
 			} else {
@@ -156,10 +169,15 @@ class BookingActivity : AppCompatActivity() {
 				this,
 				{ _, year, month, dayOfMonth ->
 
-					val selectedDate = createDate(year, month, dayOfMonth)
+					val selectedDate = createDate(
+						year,
+						month,
+						dayOfMonth
+					)
 
 					// Check-out must be after check-in.
-					if (checkInCalendar != null &&
+					if (
+						checkInCalendar != null &&
 						!selectedDate.after(checkInCalendar)
 					) {
 						tvCheckOutDate.error =
@@ -168,10 +186,11 @@ class BookingActivity : AppCompatActivity() {
 					}
 
 					checkOutCalendar = selectedDate
+
 					tvCheckOutDate.text = formatDate(selectedDate)
 
-					// Recalculate total.
 					calculateTotal()
+					updateBookNowState()
 				},
 				initialDate.get(Calendar.YEAR),
 				initialDate.get(Calendar.MONTH),
@@ -189,14 +208,13 @@ class BookingActivity : AppCompatActivity() {
 		val currentRoom = room ?: return
 
 		/*
-		 * Create the Spinner options from the selected hotel's
+		 * Create Spinner options from the selected hotel's
 		 * roomTypes data.
 		 *
 		 * Example:
-		 * Heritage Apartment:
-		 * Executive - RM 1200
-		 * Deluxe - RM 700
-		 * Superior - RM 500
+		 * Executive - RM 1200.00
+		 * Deluxe - RM 700.00
+		 * Superior - RM 500.00
 		 */
 		val roomTypeOptions = currentRoom.roomTypes.map { (type, rate) ->
 			"$type - RM %.2f".format(rate)
@@ -224,14 +242,23 @@ class BookingActivity : AppCompatActivity() {
 					id: Long
 				) {
 					calculateTotal()
+					updateBookNowState()
 				}
 
-				override fun onNothingSelected(parent: AdapterView<*>?) {
+				override fun onNothingSelected(
+					parent: AdapterView<*>?
+				) {
 					calculateTotal()
+					updateBookNowState()
 				}
 			}
 	}
 
+	/**
+	 * Calculates the booking total.
+	 *
+	 * Total = number of nights × selected room rate.
+	 */
 	private fun calculateTotal() {
 		val currentRoom = room ?: return
 		val checkIn = checkInCalendar
@@ -240,71 +267,153 @@ class BookingActivity : AppCompatActivity() {
 		// Dates must both be selected.
 		if (checkIn == null || checkOut == null) {
 			tvTotal.text = "RM 0.00"
-			btnBookNow.isEnabled = false
 			return
 		}
 
 		// Check-out must be after check-in.
 		if (!checkOut.after(checkIn)) {
 			tvTotal.text = "RM 0.00"
-			btnBookNow.isEnabled = false
 			return
 		}
 
 		// Calculate number of nights.
-		val difference = checkOut.timeInMillis - checkIn.timeInMillis
+		val difference =
+			checkOut.timeInMillis - checkIn.timeInMillis
+
 		val nights = TimeUnit.MILLISECONDS.toDays(difference)
 
-		// Get the selected room type.
+		// Get selected room type.
+		val selectedPosition =
+			spinnerRoomType.selectedItemPosition
+
+		val roomTypeNames =
+			currentRoom.roomTypes.keys.toList()
+
+		if (selectedPosition !in roomTypeNames.indices) {
+			tvTotal.text = "RM 0.00"
+			return
+		}
+
+		val selectedRoomType =
+			roomTypeNames[selectedPosition]
+
+		val roomRate =
+			currentRoom.roomTypes[selectedRoomType] ?: 0.0
+
+		// Total = number of nights × room rate.
+		val total = nights * roomRate
+
+		tvTotal.text = "RM %.2f".format(total)
+	}
+
+	/**
+	 * Enables Book Now only when all required
+	 * booking information is valid.
+	 *
+	 * Required:
+	 * 1. Check-in date
+	 * 2. Check-out date
+	 * 3. Check-out after check-in
+	 * 4. Valid room type and room rate
+	 */
+	private fun updateBookNowState() {
+		val currentRoom = room
+
+		if (currentRoom == null) {
+			btnBookNow.isEnabled = false
+			setBookButtonColor(false)
+			return
+		}
+
+		val checkIn = checkInCalendar
+		val checkOut = checkOutCalendar
+
+		// Both dates must be selected.
+		if (checkIn == null || checkOut == null) {
+			btnBookNow.isEnabled = false
+			setBookButtonColor(false)
+			return
+		}
+
+		// Check-out must be after check-in.
+		if (!checkOut.after(checkIn)) {
+			btnBookNow.isEnabled = false
+			setBookButtonColor(false)
+			return
+		}
+
+		// Check whether the selected room type is valid.
 		val selectedPosition = spinnerRoomType.selectedItemPosition
 		val roomTypeNames = currentRoom.roomTypes.keys.toList()
 
 		if (selectedPosition !in roomTypeNames.indices) {
-			tvTotal.text = "RM 0.00"
 			btnBookNow.isEnabled = false
+			setBookButtonColor(false)
 			return
 		}
 
 		val selectedRoomType = roomTypeNames[selectedPosition]
 		val roomRate = currentRoom.roomTypes[selectedRoomType] ?: 0.0
 
-		// Total = number of nights × room rate.
-		val total = nights * roomRate
+		// Enable Book Now when all required information is valid.
+		val isValid = roomRate > 0.0
 
-		tvTotal.text = "RM %.2f".format(total)
+		btnBookNow.isEnabled = isValid
+		setBookButtonColor(isValid)
+	}
 
-		// Enable Book Now only when the dates are valid.
-		btnBookNow.isEnabled = nights > 0 && roomRate > 0.0
+	private fun setBookButtonColor(enabled: Boolean) {
+		val color = if (enabled) {
+			Color.parseColor("#5F04F3")
+		} else {
+			Color.parseColor("#BDBDBD")
+		}
+
+		btnBookNow.backgroundTintList = ColorStateList.valueOf(color)
 	}
 
 	private fun setupBookNowButton() {
 		btnBookNow.setOnClickListener {
 
-			val currentRoom = room ?: return@setOnClickListener
-			val checkIn = checkInCalendar
-			val checkOut = checkOutCalendar
+			val currentRoom =
+				room ?: return@setOnClickListener
 
-			if (checkIn == null || checkOut == null) {
-				return@setOnClickListener
-			}
+			val checkIn =
+				checkInCalendar ?: return@setOnClickListener
 
+			val checkOut =
+				checkOutCalendar ?: return@setOnClickListener
+
+			// Final validation before creating the booking.
 			if (!checkOut.after(checkIn)) {
 				return@setOnClickListener
 			}
 
-			val roomTypeNames = currentRoom.roomTypes.keys.toList()
-			val selectedPosition = spinnerRoomType.selectedItemPosition
+			val roomTypeNames =
+				currentRoom.roomTypes.keys.toList()
+
+			val selectedPosition =
+				spinnerRoomType.selectedItemPosition
 
 			if (selectedPosition !in roomTypeNames.indices) {
 				return@setOnClickListener
 			}
 
-			val selectedRoomType = roomTypeNames[selectedPosition]
-			val roomRate = currentRoom.roomTypes[selectedRoomType] ?: 0.0
+			val selectedRoomType =
+				roomTypeNames[selectedPosition]
+
+			val roomRate =
+				currentRoom.roomTypes[selectedRoomType]
+					?: return@setOnClickListener
 
 			val nights = TimeUnit.MILLISECONDS.toDays(
-				checkOut.timeInMillis - checkIn.timeInMillis
+				checkOut.timeInMillis -
+						checkIn.timeInMillis
 			)
+
+			if (nights <= 0) {
+				return@setOnClickListener
+			}
 
 			val total = nights * roomRate
 
@@ -316,7 +425,8 @@ class BookingActivity : AppCompatActivity() {
 				checkOut = formatDate(checkOut),
 				numberOfNights = nights,
 				roomRate = roomRate,
-				total = total
+				total = total,
+				imageResId = currentRoom.imageResId
 			)
 
 			// Return the booking to MainActivity.
@@ -374,4 +484,6 @@ class BookingActivity : AppCompatActivity() {
 			Locale.getDefault()
 		).format(date.time)
 	}
+
+
 }

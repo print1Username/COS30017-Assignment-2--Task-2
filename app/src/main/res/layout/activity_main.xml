@@ -1,33 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@android:color/white">
 
-    <!-- Top title bar -->
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="#6300ED"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:text="Staycation"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+	<!-- Main Activity Content -->
+	<LinearLayout
+		android:id="@+id/mainContent"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/white"
+		android:orientation="vertical">
 
-    <!-- RecyclerView for hotel list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewRooms"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@android:color/white"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+		<!-- Top title bar -->
+		<TextView
+			android:id="@+id/tvTitle"
+			android:layout_width="match_parent"
+			android:layout_height="64dp"
+			android:background="#6300ED"
+			android:gravity="center_vertical"
+			android:paddingStart="20dp"
+			android:text="Staycation"
+			android:textColor="@android:color/white"
+			android:textSize="24sp"
+			android:textStyle="bold" />
 
-</LinearLayout>
+		<!-- RecyclerView for hotel list -->
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/recyclerViewRooms"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:background="@android:color/white"
+			android:clipToPadding="false"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp" />
+
+	</LinearLayout>
+
+	<!-- Booking Information Overlay -->
+	<include
+		android:id="@+id/bookingInformation"
+		layout="@layout/booking_information"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:visibility="gone" />
+
+</FrameLayout>
