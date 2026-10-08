@@ -1,5 +1,9 @@
 package com.example.cos30017assignment2_task2
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Room(
 	val name: String,
 	val location: String,
@@ -10,4 +14,4 @@ data class Room(
 	val facilities: List<String>,
 	val iconResId: Int,
 	val imageResId: Int
-)
+) : Parcelable

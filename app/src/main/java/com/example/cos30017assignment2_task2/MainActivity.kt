@@ -1,5 +1,6 @@
 package com.example.cos30017assignment2_task2
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,10 +21,23 @@ class MainActivity : AppCompatActivity() {
 		// Set the room list to a vertical layout
 		recyclerViewRooms.layoutManager = LinearLayoutManager(this)
 
-		// Create adapter using room data
-		roomAdapter = RoomAdapter(RoomData.rooms)
+		// Create adapter and handle room selection
+		roomAdapter = RoomAdapter(RoomData.rooms) { selectedRoom ->
+			openBookingActivity(selectedRoom)
+		}
 
 		// Attach adapter to RecyclerView
 		recyclerViewRooms.adapter = roomAdapter
+	}
+
+	/**
+	 * Opens BookingActivity and passes the selected Room.
+	 */
+	private fun openBookingActivity(room: Room) {
+		val intent = Intent(this, BookingActivity::class.java)
+
+		intent.putExtra("room", room)
+
+		startActivity(intent)
 	}
 }

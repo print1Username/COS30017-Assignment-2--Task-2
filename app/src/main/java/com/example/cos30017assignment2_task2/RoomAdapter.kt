@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 
 class RoomAdapter(
-	private val rooms: List<Room>
+	private val rooms: List<Room>,
+	private val onRoomClick: (Room) -> Unit
 ) : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
 
-	// ViewHolder stores the views used by each room item
 	class RoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 		val roomImage: ImageView = itemView.findViewById(R.id.ivRoomImage)
@@ -21,46 +22,42 @@ class RoomAdapter(
 		val roomPrice: TextView = itemView.findViewById(R.id.tvRoomPrice)
 	}
 
-	// Creates a new room item using item_room.xml
 	override fun onCreateViewHolder(
 		parent: ViewGroup,
 		viewType: Int
 	): RoomViewHolder {
-
 		val view = LayoutInflater.from(parent.context)
 			.inflate(R.layout.item_room, parent, false)
 
 		return RoomViewHolder(view)
 	}
 
-	// Displays room data inside the item layout
 	override fun onBindViewHolder(
 		holder: RoomViewHolder,
 		position: Int
 	) {
-
 		val room = rooms[position]
 
-		// Set hotel image
-		holder.roomImage.setImageResource(room.iconResId)
-
-		// Set hotel name
+		// Display room information
+		holder.roomImage.setImageResource(room.imageResId)
 		holder.roomName.text = room.name
-
-		// Set location
 		holder.roomLocation.text = room.location
-
-		// Set star rating
 		holder.roomStars.text = "${room.stars} stars"
 
-		// Find the cheapest room type
-		val minimumPrice = room.roomTypes.values.minOrNull() ?: 0.0
+		// Display the lowest available room rate
+		val lowestRate = room.roomTypes.values.minOrNull() ?: 0.0
+		holder.roomPrice.text = String.format(
+			Locale.getDefault(),
+			"RM %.0f",
+			lowestRate
+		)
 
-		// Display minimum price
-		holder.roomPrice.text = "RM %.0f".format(minimumPrice)
+		// Handle room click
+		holder.itemView.setOnClickListener {
+			onRoomClick(room)
+		}
 	}
 
-	// Returns the number of rooms
 	override fun getItemCount(): Int {
 		return rooms.size
 	}
