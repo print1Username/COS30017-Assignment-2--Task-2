@@ -38,14 +38,14 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/print1Username/COS30017-Assignment-2.Task-2.git
+git clone https://github.com/print1Username/COS30017-Assignment-2--Task-2.git
 cd COS30017-Assignment-2--Task-2
 ```
 
 ### 2. 打开项目
 
 1. 打开 Android Studio。
-2. 选择 **File > Open**，选中 `COS30017-Assignment-2.Task-2` 文件夹。
+2. 选择 **File > Open**，选中 `COS30017-Assignment-2--Task-2` 文件夹。
 3. 等待 **Gradle Sync** 完成（第一次可能需要几分钟）。
 
 ### 3. 运行应用
@@ -56,7 +56,7 @@ cd COS30017-Assignment-2--Task-2
 ## 程序目录
 
 ```
-COS30017-Assignment-2.Task-2/
+COS30017-Assignment-2--Task-2/
 ├── app/
 │   ├── build.gradle.kts            # 应用模块的构建设置
 │   └── src/main/
