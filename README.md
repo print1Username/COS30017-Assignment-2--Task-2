@@ -38,7 +38,7 @@ The app has two screens:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/print1Username/COS30017-Assignment-2--Task-2.git
+git clone https://github.com/print1Username/COS30017-Assignment-2.Task-2.git
 cd COS30017-Assignment-2--Task-2
 ```
 
@@ -56,7 +56,7 @@ cd COS30017-Assignment-2--Task-2
 ## Project Structure
 
 ```
-COS30017-Assignment-2--Task-2/
+COS30017-Assignment-2.Task-2/
 ├── app/
 │   ├── build.gradle.kts            # App-level build settings
 │   └── src/main/
