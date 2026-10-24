@@ -45,7 +45,7 @@ cd COS30017-Assignment-2--Task-2
 ### 2. Open the project
 
 1. Open Android Studio.
-2. Choose **File > Open** and select the `COS30017-Assignment-2--Task-2` folder.
+2. Choose **File > Open** and select the `COS30017-Assignment-2.Task-2` folder.
 3. Wait for **Gradle Sync** to finish (this can take a few minutes the first time).
 
 ### 3. Run the app
